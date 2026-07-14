@@ -1,5 +1,7 @@
 # Supernova Pro
 
+[English](README.md) | [中文](README_CN.md)
+
 Minecraft 1.20.4 Fabric 水晶PvP客户端。
 
 [![Build](https://github.com/bhirapth/Supernova-Pro/actions/workflows/build.yml/badge.svg)](https://github.com/bhirapth/Supernova-Pro/actions/workflows/build.yml)

@@ -1,5 +1,7 @@
 # Supernova Pro
 
+[English](README.md) | [中文](README_CN.md)
+
 A Minecraft 1.20.4 Fabric hacked client for Crystal PvP.
 
 [![Build](https://github.com/bhirapth/Supernova-Pro/actions/workflows/build.yml/badge.svg)](https://github.com/bhirapth/Supernova-Pro/actions/workflows/build.yml)
