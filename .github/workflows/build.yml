@@ -50,6 +50,51 @@ jobs:
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Next version: v$NEW_VERSION"
 
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG="v${{ steps.latest_version.outputs.version }}"
+          NEW_TAG="v${{ steps.next_version.outputs.version }}"
+          
+          # Get commits since last tag
+          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" 2>/dev/null || git log --pretty=format:"- %s (%h)" -20)
+          
+          # Categorize commits
+          FEATURES=$(echo "$COMMITS" | grep -i "^- feat" | sed 's/^/  /' || true)
+          FIXES=$(echo "$COMMITS" | grep -i "^- fix" | sed 's/^/  /' || true)
+          REFACTORS=$(echo "$COMMITS" | grep -i "^- refactor" | sed 's/^/  /' || true)
+          DOCS=$(echo "$COMMITS" | grep -i "^- docs" | sed 's/^/  /' || true)
+          CI=$(echo "$COMMITS" | grep -i "^- ci" | sed 's/^/  /' || true)
+          OTHER=$(echo "$COMMITS" | grep -viE "^- (feat|fix|refactor|docs|ci)" | sed 's/^/  /' || true)
+          
+          # Build changelog
+          CHANGELOG="## What's Changed in ${NEW_TAG}\n"
+          
+          if [ -n "$FEATURES" ]; then
+            CHANGELOG+="\n### ✨ New Features\n${FEATURES}\n"
+          fi
+          if [ -n "$FIXES" ]; then
+            CHANGELOG+="\n### 🐛 Bug Fixes\n${FIXES}\n"
+          fi
+          if [ -n "$REFACTORS" ]; then
+            CHANGELOG+="\n### ♻️ Refactoring\n${REFACTORS}\n"
+          fi
+          if [ -n "$DOCS" ]; then
+            CHANGELOG+="\n### 📚 Documentation\n${DOCS}\n"
+          fi
+          if [ -n "$CI" ]; then
+            CHANGELOG+="\n### 🔧 CI/CD\n${CI}\n"
+          fi
+          if [ -n "$OTHER" ]; then
+            CHANGELOG+="\n### 📦 Other Changes\n${OTHER}\n"
+          fi
+          
+          CHANGELOG+="\n**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...${NEW_TAG}"
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Update gradle.properties
         run: |
           sed -i "s/^mod_version = .*/mod_version = ${{ steps.next_version.outputs.version }}/" gradle.properties
@@ -93,4 +138,4 @@ jobs:
           tag_name: "v${{ steps.next_version.outputs.version }}"
           name: "v${{ steps.next_version.outputs.version }}"
           files: ${{ steps.find-artifact.outputs.artifact }}
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.changelog }}
