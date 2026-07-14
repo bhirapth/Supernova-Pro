@@ -12,7 +12,6 @@ import dev.luminous.mod.modules.impl.exploit.Blink;
 import dev.luminous.mod.modules.settings.impl.BooleanSetting;
 import dev.luminous.mod.modules.settings.impl.EnumSetting;
 import dev.luminous.mod.modules.settings.impl.SliderSetting;
-import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 
@@ -113,10 +112,6 @@ public class AutoGapple extends Module {
     private boolean isInCombat() {
         List<PlayerEntity> enemies = CombatUtil.getEnemies(crystalRange.getValue());
         if (!enemies.isEmpty()) return true;
-
-        for (EndCrystalEntity crystal : CombatUtil.getEntitiesInRange(EndCrystalEntity.class, mc.player.getPos(), crystalRange.getValue())) {
-            if (mc.player.canSee(crystal)) return true;
-        }
 
         return AutoCrystal.INSTANCE.isOn() && AutoCrystal.crystalPos != null;
     }
