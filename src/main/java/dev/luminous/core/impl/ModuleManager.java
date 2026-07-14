@@ -66,6 +66,17 @@ public class ModuleManager implements Wrapper {
         addModule(new AutoTrap());
         addModule(new AutoWeb());
         addModule(new AutoLadder());
+        addModule(new AnchorAura());
+        addModule(new AntiPiston());
+        addModule(new AutoBurrow());
+        addModule(new HoleKick());
+        addModule(new Quiver());
+        addModule(new Reach());
+        addModule(new SelfFill());
+        addModule(new TPAura());
+        addModule(new WebAura());
+        addModule(new WebCleaner());
+        addModule(new SilentDouble());
         addModule(new BedAura());
         addModule(new Blink());
         addModule(new ChorusExploit());

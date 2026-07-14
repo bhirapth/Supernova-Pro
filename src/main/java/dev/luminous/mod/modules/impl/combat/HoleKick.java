@@ -1,0 +1,54 @@
+package dev.luminous.mod.modules.impl.combat;
+
+import dev.luminous.api.utils.combat.CombatUtil;
+import dev.luminous.api.utils.entity.EntityUtil;
+import dev.luminous.api.utils.world.BlockUtil;
+import dev.luminous.mod.modules.Module;
+import dev.luminous.mod.modules.impl.client.AntiCheat;
+import dev.luminous.mod.modules.settings.impl.BooleanSetting;
+import dev.luminous.mod.modules.settings.impl.SliderSetting;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+
+public class HoleKick extends Module {
+    public static HoleKick INSTANCE;
+
+    public final SliderSetting range =
+            add(new SliderSetting("Range", 5.0, 1.0, 6.0, 0.1).setSuffix("m"));
+    private final SliderSetting targetRange =
+            add(new SliderSetting("TargetRange", 8.0, 1.0, 8.0, 0.1).setSuffix("m"));
+    private final BooleanSetting rotate =
+            add(new BooleanSetting("Rotate", true));
+
+    public HoleKick() {
+        super("HoleKick", Category.Combat);
+        setChinese("踢人出坑");
+        INSTANCE = this;
+    }
+
+    @Override
+    public void onUpdate() {
+        if (nullCheck()) return;
+        for (PlayerEntity target : CombatUtil.getEnemies(targetRange.getValue())) {
+            if (isInHole(target)) {
+                kickFromHole(target);
+            }
+        }
+    }
+
+    private boolean isInHole(PlayerEntity player) {
+        BlockPos pos = player.getBlockPos();
+        int surrounding = 0;
+        for (Direction dir : Direction.HORIZONTAL) {
+            if (BlockUtil.isSolid(pos.offset(dir))) {
+                surrounding++;
+            }
+        }
+        return surrounding >= 4 && BlockUtil.isSolid(pos.down());
+    }
+
+    private void kickFromHole(PlayerEntity target) {
+        // Try to place obsidian above the target to force them out
+    }
+}
